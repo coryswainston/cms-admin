@@ -1,10 +1,46 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Call Me Spiritual | Admin</title>
-  </head>
-  <body>
-    <h1>Hello world</h1>
-  </body>
-</html>
+<%- include('../modules/header', {'title': 'Consider Me Spiritual | Home'}); %>
+<header>
+  <span class="page-title">CMS Admin</span>
+  <nav>
+    <form action="/logout" method="post">
+      <button type="submit" name="logout">Sign out</button>
+    </form>
+  </nav>
+</header>
+<main>
+  <div class="main-wrapper">
+    <% if (quotes) { for(var id in quotes) { %>
+    <form class="quote-box" action="#" method="">
+        <div class="quote">
+          <input
+            type="text"
+            name="quote-text"
+            autocomplete="off"
+            value="<%= quotes[id]['quote'] %>"
+          >
+        </div>
+        <div class="author">
+          <input
+            type="text"
+            name="quote-author"
+            autocomplete="off"
+            value="<%= quotes[id]['author'] %>"
+          >
+        </div>
+        <div class="scripture">
+          <input
+            type="checkbox"
+            name="quote-is-scripture"
+            value="<%= quotes[id]['scripture'] %>"
+          >
+          <label for="quote-is-scripture">Scripture?</label>
+        </div>
+        <div class="">
+          <button style="color:green" type="submit" name="approve-quote" class="icon-button">check_circle</button>
+          <button style="color:red" type="submit" name="delete-quote" class="icon-button">delete</button>
+        </div>
+    </form>
+    <% }} %>
+  </div>
+</main>
+<%- include('../modules/footer', {}); %>

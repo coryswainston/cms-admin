@@ -1,0 +1,126 @@
+:root {
+  --blue: #00f;
+  --darkblue: #00b;
+  --offwhite: #fafafa;
+  --grey: #779;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, sans-serif;
+  background: var(--offwhite);
+}
+
+.main-wrapper {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form > input {
+  padding: 12px;
+  font-size: 14pt;
+  margin: 5px;
+  font-family: inherit;
+  border: 1px solid var(--grey);
+  box-shadow:0 0 10px lightgrey;
+}
+
+.login-form > input:focus {
+  box-shadow: 0 0 2px var(--blue);
+}
+
+.login-form > span {
+  padding: 5px;
+  color: var(--grey);
+}
+
+.action-button {
+  padding: 12px 48px 12px;
+  margin: 5px;
+  background: white;
+  color: var(--blue);
+  border: none;
+  text-transform: uppercase;
+  font-family: inherit;
+  box-shadow:0 0 10px lightgrey;
+  cursor: pointer;
+}
+
+.action-button:hover {
+  box-shadow:0 0 10px var(--grey);
+}
+
+h2 {
+  color: var(--blue);
+}
+
+.quote-box {
+  margin: 10px 0;
+  padding: 40px 80px;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: space-around;
+  box-shadow: -2px 2px 10px lightgrey;
+  font-size: 14pt;
+  background: white;
+}
+
+.quote-box > div {
+  margin: 5px;
+}
+
+.quote-box input {
+  font-size: inherit;
+  outline: none;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid black;
+  transition: border 200ms;
+}
+
+.quote-box input:focus {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid var(--blue);
+}
+
+header {
+  width: 100%;
+  height: 50px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  display: flex;
+  background: var(--blue);
+  color: white;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.icon-button {
+  background: transparent;
+  border: none;
+  font-size: 32pt;
+  font-family: 'Material Icons';
+  cursor: pointer;
+}
