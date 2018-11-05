@@ -1,5 +1,5 @@
 :root {
-  --blue: #3b5998;
+  --blue: #258bd9;
   --offwhite: #fafafa;
   --grey: #779;
   --danger: #a00;
@@ -14,9 +14,10 @@ body {
 }
 
 .main-wrapper {
+  margin-top: 100px;
   width: 100%;
   display: flex;
-  flex-flow: column wrap;
+  flex-flow: row wrap;
   align-items: center;
   justify-content: center;
 }
@@ -54,6 +55,7 @@ body {
   border: none;
   text-transform: uppercase;
   font-family: inherit;
+  font-size: 12pt;
   box-shadow:0 0 10px lightgrey;
   cursor: pointer;
 }
@@ -67,8 +69,8 @@ h2 {
 }
 
 .quote-box {
-  margin: 10px 0;
-  padding: 20px 40px;
+  margin: 10px;
+  padding: 30px 30px 10px;
   box-sizing: border-box;
   max-width: 90%;
   display: flex;
@@ -109,6 +111,9 @@ header {
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
+  box-shadow: 0 4px 5px lightgrey;
+  position: fixed;
+  top: 0;
 }
 
 header button {
