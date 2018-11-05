@@ -48,6 +48,10 @@
 <script type="text/javascript">
   function asyncDelete(event) {
     event.preventDefault();
+    // TODO remove this
+    if (!confirm("Are you sure you want to delete this quote?")) {
+      return;
+    }
     var form = event.srcElement.parentElement.parentNode;
     console.log(form);
     $.ajax({
@@ -67,6 +71,10 @@
 
   function asyncApprove(event) {
     event.preventDefault();
+    // TODO remove this
+    if (!confirm("Are you sure you want to add this quote to the database?")) {
+      return;
+    }
     var form = event.srcElement.parentElement.parentNode;
     $.ajax({
       url: '/approveSubmission',
