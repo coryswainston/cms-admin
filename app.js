@@ -19,6 +19,8 @@ app.set('port', (process.env.PORT || 8000))
   .get('/login', login)
   .post('/login', login)
   .post('/logout', logout)
+  .post('/deleteSubmission', deleteSubmission)
+  .post('/approveSubmission', approveSubmission)
   .get('*', send404)
   .listen(app.get('port'), () => console.log('Listening on ' + app.get('port')));
 
@@ -28,6 +30,23 @@ function checkForAuthentication(req, res, next) {
     return res.redirect('/login');
   }
   next();
+}
+
+function deleteSubmission(req, res) {
+  var success = false;
+  var id = req.body['quote-id'];
+  if (id) {
+    // delete this id
+    success = true;
+  }
+  res.send({success: success});
+}
+
+function approveSubmission(req, res) {
+  var quote = req.body['quote-text'];
+  var author = req.body['quote-author'];
+  var isScripture = req.body['quote-is-scripture'];
+  res.send({success: true});
 }
 
 function main(req, res) {

@@ -10,7 +10,7 @@
 <main>
   <div class="main-wrapper">
     <% if (quotes) { for(var id in quotes) { %>
-    <form class="quote-box" action="#" method="">
+    <form class="quote-box">
         <div class="quote">
           <input
             type="text"
@@ -35,12 +35,50 @@
           >
           <label for="quote-is-scripture">Scripture?</label>
         </div>
+        <input type="hidden" name="quote-id" value="<%= id %>">
         <div class="buttons-wrapper">
-          <button type="submit" name="approve-quote" class="icon-button confirm">check_circle</button>
-          <button type="submit" name="delete-quote" class="icon-button danger">delete</button>
+          <button type="submit" onclick="asyncApprove(event)" class="icon-button confirm">check_circle</button>
+          <button type="submit" onclick="asyncDelete(event)" class="icon-button danger">delete</button>
         </div>
     </form>
     <% }} %>
   </div>
 </main>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+  function asyncDelete(event) {
+    event.preventDefault();
+    var form = event.srcElement.parentElement.parentNode;
+    console.log(form);
+    $.ajax({
+      url: '/deleteSubmission',
+      type: 'POST',
+      data: $(form).serialize(),
+      success: function(result) {
+        if (result.success) {
+          form.classList.add('deleted');
+          form.innerHTML = "Successfully deleted";
+          // TODO animate
+          // TODO undo button
+        }
+      }
+    });
+  }
+
+  function asyncApprove(event) {
+    event.preventDefault();
+    var form = event.srcElement.parentElement.parentNode;
+    $.ajax({
+      url: '/approveSubmission',
+      type: 'POST',
+      data: $(form).serialize(),
+      success: function(result) {
+        form.classList.add('approved');
+        form.innerHTML = "Successfully added this quote."
+        // TODO animate
+        // TODO undo button
+      }
+    });
+  }
+</script>
 <%- include('../modules/footer', {}); %>

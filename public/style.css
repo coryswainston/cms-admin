@@ -141,3 +141,18 @@ header button {
   align-items: flex-end;
   width: 100%;
 }
+
+.quote-box.approved {
+  background: var(--confirm);
+}
+
+.quote-box.deleted {
+  background: var(--danger);
+}
+
+.quote-box.approved, .quote-box.deleted {
+  color: var(--offwhite);
+  font-size: 10pt;
+  max-width: 100%;
+  max-height: 30px;
+}
