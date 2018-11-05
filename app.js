@@ -36,17 +36,40 @@ function deleteSubmission(req, res) {
   var success = false;
   var id = req.body['quote-id'];
   if (id) {
-    // delete this id
+    removeQuoteFromNewQuotes(id);
     success = true;
   }
   res.send({success: success});
 }
 
+function removeQuoteFromNewQuotes(id) {
+  firebase.database().ref('NewQuotes/' + id).remove();
+}
+
 function approveSubmission(req, res) {
   var quote = req.body['quote-text'];
   var author = req.body['quote-author'];
-  var isScripture = req.body['quote-is-scripture'];
-  res.send({success: true});
+  var isScripture = req.body['quote-is-scripture'] != undefined;
+  var id = req.body['quote-id'];
+  // TODO fix this
+  var alteredId = "\" " + id + "\"";
+
+  var submission = {
+    quote: quote,
+    author: author,
+    id: id,
+    scripture: isScripture
+  }
+  var pair = {};
+  pair[alteredId] = submission;
+  firebase.database().ref('Quotes/' + alteredId).set(submission, (err) => {
+    if (err) {
+      return res.send({success: false});
+    } else {
+      removeQuoteFromNewQuotes(id);
+      res.send({success: true});
+    }
+  });
 }
 
 function main(req, res) {
