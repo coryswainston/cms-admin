@@ -162,3 +162,8 @@ header button {
   max-height: 30px;
   padding: 20px 40px;
 }
+
+.quote-box a {
+  cursor: pointer;
+  text-decoration: underline;
+}

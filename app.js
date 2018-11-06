@@ -1,13 +1,14 @@
 const express = require('express');
 const app = express();
-const firebase = require('firebase');
+const FirebaseHelper = require('./firebase-helper.js');
+
 var config = {
   apiKey: "AIzaSyCgfX5y0dhdUa_UIFAauKuJcqslV4yb0NA",
   authDomain: "consider-me-spiritual.firebaseapp.com",
   databaseURL: "https://consider-me-spiritual.firebaseio.com",
   storageBucket: "consider-me-spiritual.appspot.com",
 }
-firebase.initializeApp(config);
+var firebaseHelper = new FirebaseHelper(config);
 
 app.set('port', (process.env.PORT || 8000))
   .use(express.static(__dirname + '/public'))
@@ -21,87 +22,94 @@ app.set('port', (process.env.PORT || 8000))
   .post('/logout', logout)
   .post('/deleteSubmission', deleteSubmission)
   .post('/approveSubmission', approveSubmission)
+  .post('/undoDelete', undoDelete)
+  .post('/undoApprove', undoApprove)
   .get('*', send404)
   .listen(app.get('port'), () => console.log('Listening on ' + app.get('port')));
 
 function checkForAuthentication(req, res, next) {
-  if (firebase.auth().currentUser == null) {
+  if (firebaseHelper.getCurrentUser() == null) {
     console.log("there is no user. redirecting to login")
     return res.redirect('/login');
   }
   next();
 }
 
-function deleteSubmission(req, res) {
-  var success = false;
-  var id = req.body['quote-id'];
-  if (id) {
-    removeQuoteFromNewQuotes(id);
-    success = true;
-  }
-  res.send({success: success});
-}
-
-function removeQuoteFromNewQuotes(id) {
-  firebase.database().ref('NewQuotes/' + id).remove();
-}
-
-function approveSubmission(req, res) {
-  var quote = req.body['quote-text'];
-  var author = req.body['quote-author'];
-  var isScripture = req.body['quote-is-scripture'] != undefined;
-  var id = req.body['quote-id'];
-  // TODO fix this
-  var alteredId = "\" " + id + "\"";
-
-  var submission = {
+function getSubmissionFromBody(body) {
+  var quote = body['quote-text'];
+  var author = body['quote-author'];
+  var isScripture = body['quote-is-scripture'] != undefined;
+  var id = body['quote-id'];
+  return {
     quote: quote,
     author: author,
     id: id,
     scripture: isScripture
   }
-  var pair = {};
-  pair[alteredId] = submission;
-  firebase.database().ref('Quotes/' + alteredId).set(submission, (err) => {
-    if (err) {
-      return res.send({success: false});
-    } else {
-      removeQuoteFromNewQuotes(id);
-      res.send({success: true});
-    }
+}
+
+function deleteSubmission(req, res) {
+  var submission = getSubmissionFromBody(req.body);
+
+  firebaseHelper.deleteQuote(submission, (err) => {
+    return res.send({success: err == null});
+  });
+}
+
+function undoDelete(req, res) {
+  var id = req.body['quote-id'];
+
+  firebaseHelper.undoDelete(id, (err) => {
+    return res.send({success: err == null});
+  });
+}
+
+function approveSubmission(req, res) {
+  var submission = getSubmissionFromBody(req.body);
+
+  firebaseHelper.submitQuote(submission, (err) => {
+    return res.send({success: err == null});
+  });
+}
+
+function undoApprove(req, res) {
+  var id = req.body['quote-id'];
+
+  firebaseHelper.undoSubmit(id, (err) => {
+    return res.send({success: err == null});
   });
 }
 
 function main(req, res) {
-  var database = firebase.database();
-  database.ref('/NewQuotes').once('value').then((snapshot) => {
-    res.render('pages/index', {quotes: snapshot.val()});
+  firebaseHelper.clearCache();
+  firebaseHelper.retrieveAllNewQuotes((quotes) => {
+    res.render('pages/index', {quotes: quotes});
   });
 }
 
 function logout(req, res) {
-  firebase.auth().signOut().then(() => {
+  firebaseHelper.signOut((err) => {
+    if (err) {
+      console.log(err);
+    }
     res.redirect('/login');
-  }).catch((err) => {
-    console.log(err);
-  })
+  });
 }
 
 function login(req, res) {
   if (req.method === "POST" && req.body.email && req.body.password) {
     const email = req.body.email;
     const password = req.body.password;
-    firebase.auth().signInWithEmailAndPassword(email, password).catch((err) => {
-      return res.redirect('/login?authMsg=true');
-    });
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
+    firebaseHelper.signIn(email, password, (err, user) => {
+      if (err) {
+        return res.redirect('/login?authMsg=true');
+      } else {
         console.log("there is a user. redirecting")
         return res.redirect('/');
       }
     });
   } else {
-    if (firebase.auth().currentUser != null) {
+    if (firebaseHelper.getCurrentUser() != null) {
       console.log("already logged in. Redirecting");
       res.redirect('/');
     } else {

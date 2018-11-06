@@ -10,7 +10,7 @@
 <main>
   <div class="main-wrapper">
     <% if (quotes) { for(var id in quotes) { %>
-    <form class="quote-box">
+    <form id="<%= id %>" class="quote-box">
         <div class="quote">
           <input
             type="text"
@@ -48,22 +48,59 @@
 <script type="text/javascript">
   function asyncDelete(event) {
     event.preventDefault();
-    // TODO remove this
-    if (!confirm("Are you sure you want to delete this quote?")) {
-      return;
-    }
     var form = event.srcElement.parentElement.parentNode;
-    console.log(form);
     $.ajax({
       url: '/deleteSubmission',
       type: 'POST',
       data: $(form).serialize(),
       success: function(result) {
         if (result.success) {
+          var originalForm = form.cloneNode(true);
           form.classList.add('deleted');
-          form.innerHTML = "Successfully deleted";
+          var msgDiv = document.createElement("div");
+          var msg = document.createTextNode("Successfully deleted this quote. ");
+          var btn = document.createElement("a");
+          btn.appendChild(document.createTextNode("Undo"));
+          btn.addEventListener("click", function() {
+            undoRemove(originalForm);
+          });
+          msgDiv.appendChild(msg);
+          msgDiv.appendChild(btn);
+          form.innerHTML = "";
+          form.appendChild(msgDiv);
           // TODO animate
-          // TODO undo button
+        }
+      }
+    });
+  }
+
+  function undoRemove(form) {
+    var formData = $(form).serialize();
+    $.ajax({
+      url: '/undoDelete',
+      type: 'POST',
+      data: formData,
+      success: function(result) {
+        if (result.success) {
+          var el = document.getElementById(form.id);
+          el.innerHTML = form.innerHTML;
+          el.classList.remove('deleted');
+        }
+      }
+    });
+  }
+
+  function undoApprove(form) {
+    var formData = $(form).serialize();
+    $.ajax({
+      url: '/undoApprove',
+      type: 'POST',
+      data: formData,
+      success: function(result) {
+        if (result.success) {
+          var el = document.getElementById(form.id);
+          el.innerHTML = form.innerHTML;
+          el.classList.remove('approved');
         }
       }
     });
@@ -71,20 +108,28 @@
 
   function asyncApprove(event) {
     event.preventDefault();
-    // TODO remove this
-    if (!confirm("Are you sure you want to add this quote to the database?")) {
-      return;
-    }
     var form = event.srcElement.parentElement.parentNode;
     $.ajax({
       url: '/approveSubmission',
       type: 'POST',
       data: $(form).serialize(),
       success: function(result) {
-        form.classList.add('approved');
-        form.innerHTML = "Successfully added this quote."
-        // TODO animate
-        // TODO undo button
+        if (result.success) {
+          var originalForm = form.cloneNode(true);
+          form.classList.add('approved');
+          var msgDiv = document.createElement("div");
+          var msg = document.createTextNode("Successfully added this quote. ");
+          var btn = document.createElement("a");
+          btn.appendChild(document.createTextNode("Undo"));
+          btn.addEventListener("click", function() {
+            undoApprove(originalForm);
+          });
+          msgDiv.appendChild(msg);
+          msgDiv.appendChild(btn);
+          form.innerHTML = "";
+          form.appendChild(msgDiv);
+          // TODO animate
+        }
       }
     });
   }
